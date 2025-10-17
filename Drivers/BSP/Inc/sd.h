@@ -130,6 +130,18 @@ HAL_StatusTypeDef SD_WriteBlocks(uint8_t *pData, uint32_t BlockAdd, uint32_t Num
 HAL_StatusTypeDef SD_ReadBlocks(uint8_t *pData, uint32_t BlockAdd, uint32_t NumberOfBlocks, uint32_t Timeout);
 
 #ifdef DEBUG
+
+/**
+ * @defgroup SD_MeasureTest  测试函数配置
+ * @{
+ */
+#define SD_TEST_BLOCKS      32           /* 测试块数 - 建议值范围[32, 256]。越大越准确, 消耗0.5倍RAM(KB) */
+#define SD_TEST_BLOCK_START 1000        /* 测试起始块地址 */
+#define SD_TIMEOUT_MS       16000        /* 超时时间 */
+/**
+ * @}
+ */
+
 /**
  * @brief SD卡性能测试函数
  * @retval HAL_StatusTypeDef 返回操作状态
