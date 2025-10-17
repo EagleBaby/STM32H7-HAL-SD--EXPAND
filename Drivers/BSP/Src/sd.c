@@ -311,10 +311,6 @@ HAL_StatusTypeDef SD_ReadBlocks(uint8_t *pData, uint32_t BlockAdd, uint32_t Numb
 
 #ifdef DEBUG
 
-#define SD_TEST_BLOCKS      256           /* 测试块数 - 建议值范围[32, 256]。越大越准确, 消耗0.5倍RAM(KB) */
-#define SD_TEST_BLOCK_START 1000        /* 测试起始块地址 */
-#define SD_TIMEOUT_MS       16000        /* 超时时间 */
-
 /* 宏检查：限制测试块数最大值 */
 #if SD_TEST_BLOCKS > 256
   #error "SD_TEST_BLOCKS cannot exceed 256 to avoid buffer overflow"
