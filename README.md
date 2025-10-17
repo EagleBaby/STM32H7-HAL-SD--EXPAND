@@ -5,19 +5,18 @@
 
 ## 项目概述
 
-本项目提供了STM32H7系列微控制器的HAL库SD卡驱动扩展实现，支持UHS-I高速模式，包含完整的SD卡BSP（板级支持包）驱动实现。
+本项目提供了STM32H7系列微控制器的HAL库SD卡驱动扩展实现。
 
 ## 功能特性
 
 ### 核心功能
 - ✅ **SD卡初始化与状态检测**
-- ✅ **多数据块读写操作（查询模式）**
+- ✅ **多数据块读写操作**
 - ✅ **错误诊断与处理机制**
 - ✅ **性能测试与测量**
 - ✅ **卡信息获取接口**
 
 ### 技术特点
-- 🚀 **UHS-I高速模式支持** - 充分利用STM32H7的高速SDMMC接口
 - 🔒 **参数验证机制** - 完善的参数检查和边界保护
 - 📊 **详细错误诊断** - 完整的错误码解析和根因分析
 - ⚡ **性能优化** - 查询模式避免FIFO溢出，支持高速传输
@@ -41,9 +40,8 @@ Drivers/BSP/
 在使用本驱动前，请确保在STM32CubeMX中完成以下配置：
 
 - **SDMMC1外设**：使能并配置为SD卡4位宽总线模式
-- **时钟配置**：SDMMC时钟建议配置为48MHz或更高
-- **DMA配置**：可选，本驱动使用查询模式
-- **中断**：SDMMC1全局中断（可选）
+- **时钟配置**：最终SDMMC_CK输出给SD的时钟不能超过25Mhz(测试时只通过了12.8Mhz主频，可能是板子布线比较拉)
+- **其他**：由于是H7系列，自带DMA。所以无需配置中断即可使用。
 
 ### 2. 基本使用示例
 
@@ -52,36 +50,59 @@ Drivers/BSP/
 
 int main(void)
 {
-    HAL_StatusTypeDef status;
-    
-    // 初始化SD卡
-    status = SD_Init();
-    if (status != HAL_OK) {
-        // 处理初始化失败
-        Error_Handler();
-    }
-    
-    // 获取SD卡信息
-    SD_CardInfoTypeDef card_info;
-    status = SD_GetCardInfo(&card_info);
-    if (status == HAL_OK) {
-        printf("SD卡容量: %lu MB\r\n", card_info.LogBlockNbr / 2048);
-    }
-    
-    // 数据读写示例
-    uint8_t write_buffer[512] = {0xAA, 0xBB, 0xCC, 0xDD};
-    uint8_t read_buffer[512];
-    
-    // 写入数据块
-    status = SD_WriteBlocks(write_buffer, 0, 1, 1000);
-    
-    // 读取数据块
-    status = SD_ReadBlocks(read_buffer, 0, 1, 1000);
-    
-    while (1) {
-        // 主循环
-    }
+
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MPU Configuration--------------------------------------------------------*/
+  MPU_Config();
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_SDMMC1_SD_Init();
+  MX_USART1_UART_Init();
+  /* USER CODE BEGIN 2 */
+  printf("Hello World!\r\n");
+  
+  if (SD_Init() == HAL_OK)
+  {
+    printf("[PASS] SD_Init passed!\n");
+    SD_MeasureTest();
+  }
+  else
+  {
+    printf("[FAIL] SD_Init failed!\n");
+  }
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
 }
+
 ```
 
 ### 3. 性能测试
@@ -95,10 +116,10 @@ int main(void)
 #endif
 ```
 
-测试将输出：
-- 读写速度（MB/s）
-- 数据传输量
-- 错误统计信息
+测试输出：
+- 12.8Mhz 0分频系数 4线SD卡
+<img width="454" height="432" alt="image" src="https://github.com/user-attachments/assets/2ed0eaff-1282-4901-8788-8991c9150594" />
+
 
 ## API参考
 
@@ -155,7 +176,6 @@ int main(void)
 ## 性能优化建议
 
 ### 1. 时钟配置
-- SDMMC时钟建议48MHz或更高
 - 确保SD卡支持所选时钟频率
 
 ### 2. 缓冲区对齐
@@ -176,7 +196,7 @@ int main(void)
 
 1. **CubeMX配置**：所有外设初始化必须在CubeMX中完成，禁止手动修改自动生成代码
 2. **参数验证**：使用前请确保参数有效性，特别是缓冲区指针和块数量
-3. **中断处理**：本驱动使用查询模式，中断模式下需要额外配置
+3. **中断处理**：本驱动使用查询模式，利用H7的SDMMC自带DMA特性，无需中断配置。
 4. **电源管理**：低功耗应用需注意SD卡电源管理
 5. **调试信息**：DEBUG模式下的printf输出可能影响性能
 
@@ -184,7 +204,7 @@ int main(void)
 
 ### v1.0 (2025-01-15)
 - ✅ 初始版本发布
-- ✅ 支持UHS-I高速模式
+- ✅ 支持25Mhz高速模式
 - ✅ 完整的错误诊断功能
 - ✅ MISRA-C 2012合规
 - ✅ CubeMX用户保护区兼容
@@ -199,4 +219,4 @@ int main(void)
 
 ---
 
-**最后更新：2025年1月15日**
+**最后更新：2025年10月17日**
