@@ -34,6 +34,24 @@ extern "C" {
 #include "sdmmc.h"
 /* USER CODE END Includes */
 
+/* USER CODE BEGIN Exported types */
+
+/**
+ * @brief SD卡信息结构体
+ */
+typedef struct {
+    uint32_t CardType;      /*!< 卡类型 */
+    uint32_t CardVersion;   /*!< 卡版本 */
+    uint32_t Class;         /*!< 卡类别 */
+    uint32_t RelCardAdd;    /*!< 相对卡地址 */
+    uint32_t BlockNbr;      /*!< 块数量 */
+    uint32_t BlockSize;     /*!< 块大小 */
+    uint32_t LogBlockNbr;   /*!< 逻辑块数量 */
+    uint32_t LogBlockSize;  /*!< 逻辑块大小 */
+} SD_CardInfoTypeDef;
+
+/* USER CODE END Exported types */
+
 /* USER CODE BEGIN Private defines */
 
 /**
@@ -130,23 +148,6 @@ HAL_StatusTypeDef SD_GetCardInfo(SD_CardInfoTypeDef *pCardInfo);
 
 /* USER CODE END Private defines */
 
-/* USER CODE BEGIN Exported types */
-
-/**
- * @brief SD卡信息结构体
- */
-typedef struct {
-    uint32_t CardType;      /*!< 卡类型 */
-    uint32_t CardVersion;   /*!< 卡版本 */
-    uint32_t Class;         /*!< 卡类别 */
-    uint32_t RelCardAdd;    /*!< 相对卡地址 */
-    uint32_t BlockNbr;      /*!< 块数量 */
-    uint32_t BlockSize;     /*!< 块大小 */
-    uint32_t LogBlockNbr;   /*!< 逻辑块数量 */
-    uint32_t LogBlockSize;  /*!< 逻辑块大小 */
-} SD_CardInfoTypeDef;
-
-/* USER CODE END Exported types */
 
 /* USER CODE BEGIN Exported constants */
 
