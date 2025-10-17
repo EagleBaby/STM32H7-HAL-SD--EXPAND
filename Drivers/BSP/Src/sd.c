@@ -3,7 +3,7 @@
   * @file    sd.c
   * @brief   SD卡驱动实现文件 - 用户自定义区域
   * @author  STMicroelectronics
-  * @date    2025-01-15
+  * @date    2025-10-15
   * @version 1.0
   * @note    遵循CubeMX用户保护区规范，所有修改均在USER CODE区域内进行
   * @note    符合MISRA-C 2012规范，支持调试模式下的详细诊断
